@@ -1,0 +1,151 @@
+
+<template lang="wxml">
+    <view class='content'>
+        <view class="login">
+            <open-data type="userAvatarUrl" class="login_image"></open-data>
+            <button class='btn login_button' bindgetuserinfo='weixinLogin' open-type="getUserInfo">登录</button> 
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class signIn extends wepy.page {
+    config = {
+        "navigationBarTitleText": "登录"
+    };
+    
+    components = {
+        
+    };
+
+    data = {
+        
+    };
+
+    methods = {
+        weixinLogin(res){
+            if (res.detail.userInfo){
+                const userInfo = res.detail.userInfo;
+                this.getToken(userInfo)
+            }else{
+                this.$parent.show('请授权')
+            }
+        },
+    };
+    
+    
+    
+
+    getToken(user){
+        this.$parent.showLoading('登陆中')
+        wx.login({
+            success: async res => {
+                const data=await this.$parent.request({
+                    url:this.$parent.api('getLogin'),
+                    data: { code: res.code, type:'D603'  },
+                    method:'post'
+                }).catch(err=>{
+                    this.$parent.show('登录失败,请重试')
+                })
+                if(data){
+                    // this.$parent.hideLoading()
+                    wx.setStorageSync('id', data.id);
+                    wx.setStorageSync('openid', data.openid);
+                    wx.setStorageSync('token', data.token);
+                    this.setUserInfo(user)
+                }
+            },
+            fail:err=>{
+                // this.$parent.hideLoading()
+                this.$parent.show('获取CODE失败,请重试')
+            }
+        })
+    }
+
+    setUserInfo(data){                         //微信登录更新用户数据
+        this.$parent.request({
+            url: this.$parent.api('userDetails'),
+            method: 'put',
+            data: {
+                nickname: data.nickName,
+                country: data.country,
+                city: data.city,
+                province: data.province,
+                headimgurl: data.avatarUrl,
+            }
+        }).then(res => {
+            this.getUserInfo(data)
+        }).catch(err => {
+            this.$parent.show('更新用户信息失败')
+        })
+    }
+
+    getUserInfo(data){                      //获取用户信息
+        this.$parent.request({
+            url: this.$parent.api('userDetails'),
+            method: 'get'
+        }).then(res => {
+            this.getList()
+            this.$parent.userInfo = res;
+        }).catch(err => {
+            this.$parent.show('获取用户信息失败')
+        })
+    }
+
+    getList() {                            //获取设备列表
+        this.$parent.request({
+            url: this.$parent.api('getEquList'),
+            method: 'GET'
+        }).then((arr)=>{
+            this.$parent.hideLoading()
+            if (arr.length) {
+                this.$parent.nowCodeList = arr
+                this.$parent.nowCodeId = arr[0].id
+                wx.reLaunch({
+                    url: '../../index/index'
+                })
+            } else {
+                wx.reLaunch({
+                    url: './addEqu'
+                })
+            }
+        }).catch((err)=>{
+            this.$parent.show('获取设备列表失败')
+        })
+    }
+
+    events = {
+        
+    };
+
+    onLoad() {
+        
+    };
+}
+</script>
+
+<style lang="scss">
+.login {
+  .login_ {
+    &image {
+      display: inline-block;
+      overflow: hidden;
+      position: absolute;
+      left: 250rpx;
+      top: 250rpx;
+      width: 250rpx;
+      height: 250rpx;
+      border-radius: 50%;
+    }
+    &button {
+      position: absolute;
+      left: 50rpx;
+      right: 50rpx;
+      top: 700rpx;
+      margin: 0;
+      width: auto;
+    }
+  }
+}
+</style>

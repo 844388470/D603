@@ -1,0 +1,95 @@
+$--color-ele-primary:#409EFF;
+$--color-ele-success:#67C23A;
+$--color-ele-warning:#E6A23C;
+$--color-ele-danger:#F56C6C;
+$--color-ele-info:#909399;
+$--color-zhuti:#02ad00;
+
+$--color:$--color-zhuti;
+
+
+// *{
+//     margin: 0;
+//     padding: 0;
+// }
+
+.tl {
+    text-align: left
+}
+
+.tc {
+    text-align: center
+}
+
+.tr {
+    text-align: right
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.dpn {
+    display: none;
+}
+
+.dpb {
+    display: block;
+}
+
+.dpib {
+    display: inline-block;
+}
+
+.dptc {
+    display: table-cell;
+}
+
+.vam{
+    vertical-align: middle;
+}
+
+.dpf {
+    display: flex;
+}
+
+.dpf-jcc{
+    justify-content: center;
+}
+
+.dpf-jcsb{
+    justify-content: space-between;
+}
+
+.dpf-aic{
+    align-items: center;
+}
+
+.cb{
+    clear: both;
+}
+
+.cba:after {
+    content:".";
+    clear:both;
+    display:block;
+    height:0;
+    overflow:hidden;
+    visibility:hidden;
+}
+
+.ofh{
+    overflow: hidden;
+}
+
+.mauto{
+    margin: 0 auto;
+}
+
+.round{
+    border-radius: 50%;
+}

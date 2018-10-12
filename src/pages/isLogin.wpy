@@ -1,0 +1,99 @@
+
+<template lang="wxml">
+    <button class='btn shouquan' bindgetuserinfo='retry' open-type="getUserInfo" wx:if="{{isRetry}}">重试</button>
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class isLogin extends wepy.page {
+    config = {
+        "navigationBarTitleText": "验证"
+    };
+    
+    components = {
+        
+    };
+
+    data = {
+        isRetry:false
+    };
+
+    methods = {
+
+    };
+    
+    customFunction ={
+        
+    };
+
+    events = {
+        
+    };
+
+    async setInitial(){
+        let [list,user]=await Promise.all([this.getList(),this.getUserInfo()])  
+        if(list&&user){
+            if (list.length){
+                this.$parent.nowCodeList = list
+                this.$parent.nowCodeId = list[0].id
+                wx.reLaunch({
+                    url: './index'
+                })
+            }else{
+                wx.reLaunch({
+                    url: './addEqu'
+                })
+            }
+            this.$parent.userInfo = user 
+        }else{
+            this.isRetry=true
+        }
+        this.$apply()
+    }
+
+    getList(){                            //获取设备列表
+        return this.$parent.request({
+            url: this.$parent.api('getEquList'),
+            method: 'GET'
+        }).catch(err=>{
+            this.$parent.show('获取设备列表失败')
+        })
+    }
+
+    getUserInfo(){                          //获取账号详情
+        return this.$parent.request({
+            url: this.$parent.api('userDetails'),
+            method: 'GET'
+        }).catch(err=>{
+            this.$parent.show('获取用户详情失败')
+        })
+    }
+
+    onLoad() {
+        this.$parent.showLoading('验证中')
+        wx.checkSession({
+            success: () => {
+                this.$parent.hideLoading()
+                const openid = wx.getStorageSync('openid');
+                if (openid) {
+                    this.setInitial()
+                } else {
+                    wx.reLaunch({
+                        url: './signIn'
+                    })
+                }
+            },
+            fail: () => {
+                this.$parent.hideLoading()
+                wx.reLaunch({
+                    url: './signIn'
+                })
+            }
+        })
+    };
+}
+</script>
+
+<style lang="scss">
+/** less **/
+</style>

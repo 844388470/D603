@@ -1,0 +1,156 @@
+
+<template lang="wxml">
+  <view class="content">
+      <view class="dpf-jcsb addEqu dpf dpf-aic">
+          <view class="addEqu_left">
+              <text class="addEqu_left_text">设备码</text>
+          </view>
+          <view class="addEqu_right">
+              <input class='addEqu_right_title' type='number' placeholder='请输入设备码' value='{{inputCode}}' cursor-spacing='110' bindinput='getInputCode'></input>
+              <image class='addEqu_saoma ' src="../assets/image/saoma.png" bindtap='saoma'></image>   
+          </view>
+      </view>
+      <view class="btn" bindtap='addEqu'>添加</view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class addEqu extends wepy.page {
+    config = {
+        "navigationBarTitleText": "添加设备"
+    };
+    
+    components = {
+        
+    };
+
+    data = {
+        isRetry:false,
+        inputCode:''
+    };
+
+    methods = {
+      saoma(){
+        wx.scanCode({
+          success:(res)=>{
+            if (typeof res.result =='string'){
+              this.inputCode=res.result
+              this.$apply()
+            }
+          },
+          fail:err=>{
+            console.log(err)
+          }
+        })
+      },
+      getInputCode(e){
+        this.inputCode=e.detail.value
+        this.$apply()
+      },
+      addEqu(){
+        if (!this.inputCode){
+          this.$parent.show('设备码不得为空')
+          return 
+        } else if (this.$parent.nowCodeList.filter(res => res.imei == this.inputCode).length){
+          this.$parent.show('当前账号已绑定该设备码')
+          return
+        }
+        this.$parent.showLoading('添加中')
+        this.$parent.request({
+          url: this.$parent.api('addUserEqu'),
+          method: 'post',
+          data:{
+            imei: this.inputCode
+          }
+        }).then(res => {
+          this.$parent.hideLoading()
+          this.getBindList(true)
+        }).catch(err => {
+          this.$parent.show(err.indexOf('设备已绑定')!==-1?'当前账号已绑定该设备码':err)
+        })
+      }
+    };
+    
+    getList() {                            //获取设备列表
+        this.$parent.request({
+            url: this.$parent.api('getEquList'),
+            method: 'GET'
+        }).then((arr)=>{ 
+          this.$parent.hideLoading()
+          const list = arr.filter(res => res.imei == this.inputCode)
+          if (list.length) {
+            this.$parent.nowCodeList = arr
+            this.$parent.nowCodeId = list[0].id
+            wx.reLaunch({
+              url: './index'
+            })
+          }else{
+            if (!arr.length && this.$parent.nowCodeList.length) {
+              this.$parent.nowCodeList = arr
+              this.$parent.nowCodeId = -1
+              wx.reLaunch({
+                url: './addEqu'
+              })
+            }else if (arr.length && !this.$parent.nowCodeList.length) {
+              this.$parent.nowCodeList = arr
+              this.$parent.nowCodeId = arr[0].id
+              wx.reLaunch({
+                url: './index'
+              })
+            }
+          }
+          this.$parent.nowCodeList = arr
+      }).catch(err=>{
+        this.$parent.show('获取设备列表失败')
+      })
+    };
+
+
+    onLoad() {
+        
+    };
+}
+</script>
+
+<style lang="scss">
+
+.addEqu{
+    padding:35rpx 27rpx;
+    border-bottom: 1rpx solid #e4e4e4;
+    font-size: 31rpx;
+    align-content:center;
+    .addEqu_left{
+        color: #9397aa;
+        line-height: 48rpx;
+        display: table-cell; 
+        width: 180rpx;
+        border-right: 1rpx solid #e4e4e4;
+        margin-right: 20rpx;
+        .register_left_text{
+          vertical-align: middle;
+        }
+    }
+    .addEqu_right{
+      display: table-cell;
+      width: 540rpx;
+      position: relative;
+      .addEqu_right_title{
+        width:440rpx;
+        display:inline-block;
+        vertical-align: middle;
+      }
+      .addEqu_saoma{
+        position: absolute; 
+        width: 63rpx;
+        height: 63rpx;
+        top: -5rpx;
+      }
+    }
+}
+.btn{
+  width: 696rpx;
+  margin-top: 30rpx;
+}
+
+</style>
