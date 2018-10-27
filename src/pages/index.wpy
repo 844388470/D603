@@ -1,236 +1,404 @@
-<style lang="scss">
-  .userinfo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .userinfo-avatar {
-    width: 80rpx;
-    height: 80rpx;
-    border-radius: 50%;
-  }
-
-  .userinfo-nickname {
-    color: #aaa;
-  }
-</style>
 <template>
-  <view class="container">
-    <view class="userinfo" @tap="handleViewTap">
-      <image class="userinfo-avatar" src="{{ userInfo.avatarUrl }}" background-size="cover"/>
-      <view class="userinfo-nickname">{{ userInfo.nickName }}</view>
+  <view class="content index">
+    <view class="search">
+      <van-search value="{{ search }}" placeholder="请输入搜索关键词" use-action-slot bind:change="searchChange" custom-class="search-content">
+        <view slot="action" bind:tap="startSearch">
+          <text style="padding:0 20rpx;">搜索</text>
+        </view>
+      </van-search>
+      <van-icon name="{{isMenu?'send-gift':'description'}}" class="tabIcon tc" custom-class="icon" @tap="tabChange({{!isMenu}})"/>
     </view>
-
-    <panel>
-      <view class="title" slot="title">测试数据绑定</view>
-
-      <text class="info">{{normalTitle}}</text>
-      <text class="info">{{setTimeoutTitle}}</text>
-      <text class="info">{{mixin}}</text>
-      <text class="info">{{mynum}}</text>
-      <text class="info">{{now}}</text>
-      <button @tap="plus('a')" size="mini">  +  </button>
-    </panel>
-
-    <panel>
-      <view class="title" slot="title">其它测试</view>
-      <button @tap="toast" size="mini">第三方组件</button>
-      <button @tap="communicate" size="mini">组件通信</button>
-      <button @tap="tap" size="mini">混合TAP事件</button>
-    </panel>
-
-    <panel>
-      <view class="title" slot="title">测试并发网络请求</view>
-      <view>返回结果: <text>{{netrst}}</text></view>
-      <button @tap="request" size="mini"> 点我发起10个请求 </button>
-    </panel>
-
-    <panel>
-      <view class="title" slot="title">测试组件</view>
-
-      <text class="testcounter">计数组件1: </text>
-      <view class="counterview">
-        <counter1 @index-emit.user="counterEmit" />
-      </view>
-
-      <text class="testcounter">计数组件2: </text>
-
-      <view class="counterview">
-        <counter2 :num.sync="mynum"></counter2>
-      </view>
-    </panel>
-
-    <panel>
-      <view class="title" slot="title">测试组件Repeat</view>
-      <repeat for="" index="index" item="item" key="key">
-        <group :grouplist="item" :indexa="index"></group>
-      </repeat>
-    </panel>
-
-    <panel>
-      <view class="title" slot="title">测试列表</view>
-      <list></list>
-    </panel>
-
-    <toast />
+    <view class="map"> 
+      <map id="map" style="width: 100%;height:100%;" show-location="{{false}}" longitude="{{lng}}" latitude="{{lat}}" markers="{{markers}}" @markertap="markerTap"></map>
+    </view>
+    <cover-view class="title tc">
+        <cover-view class="title-div">
+          <cover-view class="title-div-num">
+            {{list.length}}
+          </cover-view>
+          <cover-view class="title-div-text">
+            车辆总数
+          </cover-view>
+        </cover-view>
+        <cover-view class="title-div">
+          <cover-view class="title-div-num">
+            {{list.length}}
+          </cover-view>
+          <cover-view class="title-div-text">
+            报警车辆
+          </cover-view>
+        </cover-view>
+    </cover-view>
+    <cover-view class="zhezhao popup" wx:if="{{isInfo}}" @tap="closePopup">
+      <cover-view class="tips" @tap.stop="goEquInfo({{false}})">
+        <cover-view class="tips-left">
+            <cover-view class="tips-left-name">
+              {{equName}}
+            </cover-view>
+            <cover-view class="tips-left-time dpf dpf-jcsb">
+              <cover-view>{{equTime}}</cover-view>
+              <cover-view>{{timeDifference}}</cover-view>
+            </cover-view>
+        </cover-view>
+        <cover-view class="tips-right tc">
+          <cover-image class="tips-right-img" src="../assets/image/arrow.png" />
+        </cover-view>
+      </cover-view>
+    </cover-view>
+    <cover-view class="zhezhao menu" wx:if="{{isMenu}}" >
+      <cover-view class="main">
+        <cover-view class="title main-tips tc">
+          <cover-view class="title-div">
+            <cover-view class="title-div-num">
+              {{list.length}}
+            </cover-view>
+            <cover-view class="title-div-text">
+              车辆总数
+            </cover-view>
+          </cover-view>
+          <cover-view class="title-div">
+            <cover-view class="title-div-num">
+              {{list.length}}
+            </cover-view>
+            <cover-view class="title-div-text">
+              报警车辆
+            </cover-view>
+          </cover-view>
+        </cover-view>
+        <repeat for="{{list}}" key="id" index="index" item="item">
+          <cover-view class="main-list">
+            <!-- <cover-view class="list-main"> -->
+              <cover-view class="list-main-left">
+                <cover-view class="list-main-left-name">
+                  <cover-view class="list-main-left-name-police list-main-left-name-text">
+                    {{item.name}}
+                  </cover-view>
+                  <cover-view class="list-main-left-name-police" wx:if="{{item.isFire}}">防拆报警</cover-view>
+                  <cover-view class="list-main-left-name-police" wx:if="{{item.isVoltage}}">低点报警</cover-view>
+                </cover-view>
+                <cover-view class="list-main-left-time dpf dpf-jcsb">
+                  <cover-view class="fone">{{item.time || ''}}</cover-view>
+                  <cover-view>{{item.timeDifference || ''}}</cover-view>
+                </cover-view>
+              </cover-view>
+              <cover-view class="list-main-right">
+                <cover-image class="list-main-right-img" src="../assets/image/arrow.png" />
+              </cover-view>
+            <!-- </cover-view> -->
+          </cover-view>
+        </repeat>
+      </cover-view>
+    </cover-view>
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
-  import Panel from '@/components/panel' // alias example
-  import Counter from 'counter' // alias example
-  import List from '../components/list' // aliasFields example
-  import moduleA from 'module-a' // aliasFields ignore module example
-  import Group from '../components/group'
-  import Toast from 'wepy-com-toast'
-  import testMixin from '../mixins/test'
-
+  import http from '../config/http'
   export default class Index extends wepy.page {
+
     config = {
-      navigationBarTitleText: 'test'
-    }
-    components = {
-      panel: Panel,
-      counter1: Counter,
-      counter2: Counter,
-      list: List,
-      group: Group,
-      toast: Toast
-    }
-
-    mixins = [testMixin]
-
-    data = {
-      mynum: 20,
-      userInfo: {
-        nickName: '加载中...'
-      },
-      normalTitle: '原始标题',
-      setTimeoutTitle: '标题三秒后会被修改',
-      count: 0,
-      netrst: '',
-      groupList: [
-        {
-          id: 1,
-          name: '点击改变',
-          list: [
-            {
-              childid: '1.1',
-              childname: '子项，点我改变'
-            }, {
-              childid: '1.2',
-              childname: '子项，点我改变'
-            }, {
-              childid: '1.3',
-              childname: '子项，点我改变'
-            }
-          ]
-        },
-        {
-          id: 2,
-          name: '点击改变',
-          list: [
-            {
-              childid: '2.1',
-              childname: '子项，点我改变'
-            }, {
-              childid: '2.2',
-              childname: '子项，点我改变'
-            }, {
-              childid: '2.3',
-              childname: '子项，点我改变'
-            }
-          ]
-        },
-        {
-          id: 3,
-          name: '点击改变',
-          list: [
-            {
-              childid: '3.1',
-              childname: '子项，点我改变'
-            }
-          ]
+      navigationBarTitleText: '位置',
+      "usingComponents": {
+            "van-search": "../vant/search/index",
+            "van-popup": "../vant/popup/index",
+            "van-icon": "../vant/icon/index"
         }
-      ]
     }
+    data = {
+       search:'',
+       isInfo:false,
+       isMenu:false,
+       lng:'121.345367',
+       lat:'31.151707',
+      //  markers:[],
+       list:[{
+         id:1,
+         name:'设备一',
+         latitude:'31.151707',
+         longitude:'121.345367',
+         time:'2018-10-22 16:13:22',
+         isFire:true,
+         isVoltage:true,
+       },{
+         id:2,
+         name:'设备二',
+         latitude:'31.155707',
+         longitude:'121.345367',
+         time:'2018-01-02 14:00:59',
+         isFire:true,
+         isVoltage:false,
+       }],
+       id:'',
+       equName:'',
+       equTime:'',
+       timeDifference:'',
+       differenceTimer:null
+    }
+
+    watch = {
+
+    }
+
 
     computed = {
-      now () {
-        return +new Date()
+      markers(){
+        const [...list]=this.list
+        return list
       }
     }
 
+    searchChange(e){                        //搜索框改变
+      this.search=e.value
+      this.$apply()
+    }
+
+    startSearch(){                          //开始搜索
+      this.showPopup(1)
+    }
+
+    markerTap(e){                           //点击标记点
+      this.showPopup(e.markerId)
+    }
+
+    showPopup(id){                          //打开单个点弹层
+      const list=this.list.map(res=>({...res})).filter(res=>res.id==id)
+      this.id=id
+      this.equName=list.length?list[0].name:''
+      this.equTime=list.length?list[0].time:''
+      this.timeDifference=this.$parent.utils.timeFn(this.equTime)
+      this.isInfo=true
+      this.$apply()
+      this.setDifferenceTimer()
+    }
+
+    setDifferenceTimer(){                   //开始时差定时器
+      this.differenceTimer=setInterval(() => {
+        this.timeDifference=this.$parent.utils.timeFn(this.equTime)
+        this.$apply()
+      }, 1000);
+    }
+
     methods = {
-      plus () {
-        this.mynum++
+      tabChange(state){                            //列表页切换
+        if(state){
+          this.list=this.list.map(res=>({
+            ...res,
+            timeDifference:this.$parent.utils.timeFn(res.time)
+          }))
+        }
+        this.isMenu=state
+        this.$apply()
       },
-      toast () {
-        let promise = this.$invoke('toast', 'show', {
-          title: '自定义标题',
-          img: 'https://raw.githubusercontent.com/kiinlam/wetoast/master/images/star.png'
-        })
-
-        promise.then((d) => {
-          console.log('toast done')
-        })
-      },
-      tap () {
-        console.log('do noting from ' + this.$name)
-      },
-      communicate () {
-        console.log(this.$name + ' tap')
-
-        this.$invoke('counter2', 'minus', 45, 6)
-        this.$invoke('counter1', 'plus', 45, 6)
-
-        this.$broadcast('index-broadcast', 1, 3, 4)
-      },
-      request () {
-        let self = this
-        let i = 10
-        let map = ['MA==', 'MQo=', 'Mg==', 'Mw==', 'NA==', 'NQ==', 'Ng==', 'Nw==', 'OA==', 'OQ==']
-        while (i--) {
-          wepy.request({
-            url: 'https://www.madcoder.cn/tests/sleep.php?time=1&t=css&c=' + map[i] + '&i=' + i,
-            success: function (d) {
-              self.netrst += d.data + '.'
-              self.$apply()
-            }
-          })
+      goEquInfo(id){                            //进入设备详情页
+        if (id) {
+          console.log(id)
+        }else{
+          console.log(this.id)
         }
       },
-      counterEmit (...args) {
-        let $event = args[args.length - 1]
-        console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}`)
+      closePopup(){                             //关闭单个点弹层
+        this.isInfo=false
+        this.timeDifference=''
+        clearInterval(this.differenceTimer)
+        this.differenceTimer=null
+        this.$apply()
       }
     }
 
     events = {
-      'index-emit': (...args) => {
-        let $event = args[args.length - 1]
-        console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}`)
-      }
+       
     }
+
 
     onLoad() {
-      // let self = this
-      // this.$parent.getUserInfo(function (userInfo) {
-      //   if (userInfo) {
-      //     self.userInfo = userInfo
-      //   }
-      //   self.normalTitle = '标题已被修改'
-
-      //   self.setTimeoutTitle = '标题三秒后会被修改'
-      //   setTimeout(() => {
-      //     self.setTimeoutTitle = '到三秒了'
-      //     self.$apply()
-      //   }, 3000)
-
-      //   self.$apply()
-      // })
+      
     }
   }
+
 </script>
+<style lang="scss">
+  .index{
+    min-height:100vh;
+    position: relative;
+    font-size:28rpx;
+    .search{
+      position: relative;
+      &-content{
+        width: 650rpx;
+        padding:10rpx 0 10rpx 20rpx !important;
+        height: 100rpx;
+        .van-field__input{
+          line-height: 60rpx !important;
+          height: 60rpx !important;
+          font-size:28rpx;
+        }
+        .field-index--van-field{
+          padding: 10rpx 20rpx !important;
+          line-height: 60rpx;
+        }
+        .van-search__action{
+          padding:0;
+          line-height: 80rpx;
+        }
+        .van-field__clear-root{
+          line-height: 45rpx;
+        }
+      }
+      .tabIcon{
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100rpx;
+        height: 100rpx;
+        background-color: #02ad00;
+        .icon{
+          line-height: 100rpx;
+          color: #fff;
+          font-size: 50rpx;
+        }
+      }
+    }
+    .map,.title{
+      position: absolute;
+      top: 100rpx;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+    .title{
+      bottom: auto;
+      height: 150rpx;
+      background-color: rgba(0,0,0,.5);
+      color:#fff;
+      font-weight: bold;
+      padding:0 150rpx;
+      &-div{
+        float: left;
+        width: 50%;
+        &-num{
+          font-size: 60rpx;
+          line-height: 100rpx;
+        }
+        &-text{
+          font-size: 28rpx;
+          line-height: 32rpx;
+        }
+      }
+    }
+    .zhezhao{
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0,0,0,.5);
+    }
+    .popup{
+      z-index:111;
+      .tips{
+        position: fixed;
+        height: 150rpx;
+        bottom: 0;
+        width: 100%;
+        background-color: rgb(246,246,246);
+        &-left{
+          width: 650rpx;
+          height: 150rpx;
+          padding-left: 30rpx;
+          box-sizing: border-box;
+          float:left;
+          &-name{
+            font-size: 30rpx;
+            font-weight: bold;
+            line-height: 90rpx;
+          }
+          &-time{
+            font-size: 26rpx;
+            line-height: 30rpx;
+          }
+        }
+        &-right{
+          display: block;
+          width: 100rpx;
+          height: 150rpx;
+          position: relative;
+          &-img{
+            position: absolute;
+            width: 30rpx;
+            height: 50rpx;
+            top: 50rpx;
+            left: 35rpx;
+          }
+        }
+      }
+    }
+    .menu{
+      top:100rpx;
+      .main{
+        background-color:#e6e6e6;
+        width: 100%;
+        height:100%;
+        overflow-y: scroll;
+        &-tips{
+          position: relative;
+          top: 0;
+          background-color:rgba(0,0,0,.7)
+        }
+        &-list{
+          width: 750rpx;
+          background-color: rgb(246,246,246);
+          .list-main-left{
+            width: 650rpx;
+            height: 120rpx;
+            padding-left: 30rpx;
+            box-sizing: border-box;
+            float:left;
+            &-name{
+              font-weight: bold;
+              // display: flex;
+              padding-top: 10rpx;
+              height: 60rpx;
+              &-police{
+                display: inline-block;
+                margin-left:20rpx;
+                background-color: #ff0000;
+                color: #fff;
+                padding:5rpx 5rpx 0;
+                vertical-align: middle;
+                font-size: 25rpx;
+              }
+              &-text{
+                margin-left: 0;
+                background-color: rgb(246,246,246);
+                color: #000;
+                font-size: 33rpx;
+                padding-top: 8rpx;
+              }
+            }
+            &-time{
+              font-size: 26rpx;
+              line-height: 30rpx;
+            }
+          }
+          .list-main-right{
+            display: block;
+            width: 100rpx;
+            height: 120rpx;
+            position: relative;
+            &-img{
+              position: absolute;
+              width: 20rpx;
+              height: 40rpx;
+              top: 40rpx;
+              left: 35rpx;
+            }
+          }
+        }
+        &-list+.main-list{
+          border-top: 1rpx solid #ddd;
+        }
+      }
+    }
+  }
+</style>

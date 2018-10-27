@@ -1,0 +1,44 @@
+
+<template lang="wxml">
+    <view class="content about">
+        <view class="text">
+            上海XX科技有限公司
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class userInfo extends wepy.page {
+    config = {
+        "navigationBarTitleText": "关于"
+    };
+    
+    components = {
+        
+    };
+
+    data = {
+        
+    };
+
+    methods = {
+
+    };
+}
+</script>
+
+<style lang="scss">
+    .about{
+        height: 100vh;
+        .text{
+            position: absolute;
+            bottom: 20rpx;
+            left:0;
+            right: 0;
+            text-align: center;
+            color: #999;
+            font-size:25rpx;
+        }
+    }
+</style>

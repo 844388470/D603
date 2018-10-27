@@ -103,7 +103,7 @@ export default class signIn extends wepy.page {
                 this.$parent.nowCodeList = arr
                 this.$parent.nowCodeId = arr[0].id
                 wx.reLaunch({
-                    url: '../../index/index'
+                    url: './index'
                 })
             } else {
                 wx.reLaunch({

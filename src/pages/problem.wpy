@@ -1,0 +1,52 @@
+
+<template lang="wxml">
+    <view class="content problem">
+        <repeat for="{{list}}" key="index" index="index" item="item">
+            <view class="section" >
+                {{index+1}}、{{item}}
+            </view>
+        </repeat>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class problem extends wepy.page {
+    config = {
+        "navigationBarTitleText": "常见问题"
+    };
+    
+    components = {
+        
+    };
+
+    data = {
+        list:[
+            '退出登录重新登录可以更新数据',
+            '用户无绑定设备时无法进入菜单页',
+            '个人信息内只有姓名与手机号可以修改'
+        ]
+    };
+
+    methods = {
+
+    };
+}
+</script>
+
+<style lang="scss">
+    .problem{
+        width: 100%;
+        min-height:100vh;
+        padding: 20rpx;
+        box-sizing: border-box;
+        .section{
+            text-indent: 40rpx;
+            color:#999;
+            font-size:29rpx;
+            &+.section{
+                margin-top:20rpx;
+            }
+        }
+    }
+</style>

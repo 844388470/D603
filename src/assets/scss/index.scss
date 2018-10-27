@@ -14,63 +14,66 @@ $--color:$--color-zhuti;
 // }
 
 .tl {
-    text-align: left
+    text-align: left !important;
 }
 
 .tc {
-    text-align: center
+    text-align: center !important;
 }
 
 .tr {
-    text-align: right
+    text-align: right !important;
 }
 
 .fl {
-    float: left;
+    float: left !important;
 }
 
 .fr {
-    float: right;
+    float: right !important;
 }
 
 .dpn {
-    display: none;
+    display: none !important;
 }
 
 .dpb {
-    display: block;
+    display: block !important;
 }
 
 .dpib {
-    display: inline-block;
+    display: inline-block !important;
 }
 
 .dptc {
-    display: table-cell;
+    display: table-cell !important;
 }
 
 .vam{
-    vertical-align: middle;
+    vertical-align: middle !important;
 }
 
 .dpf {
-    display: flex;
+    display: flex !important;
+}
+.fone{
+    flex:1;
 }
 
 .dpf-jcc{
-    justify-content: center;
+    justify-content: center !important;
 }
 
 .dpf-jcsb{
-    justify-content: space-between;
+    justify-content: space-between !important;
 }
 
 .dpf-aic{
-    align-items: center;
+    align-items: center !important;
 }
 
 .cb{
-    clear: both;
+    clear: both !important;
 }
 
 .cba:after {
@@ -83,13 +86,13 @@ $--color:$--color-zhuti;
 }
 
 .ofh{
-    overflow: hidden;
+    overflow: hidden !important;
 }
 
 .mauto{
-    margin: 0 auto;
+    margin: 0 auto !important;
 }
 
 .round{
-    border-radius: 50%;
+    border-radius: 50% !important;
 }

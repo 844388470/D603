@@ -4,6 +4,7 @@
 import wepy from 'wepy'
 import api from './config/api'
 import intercept from './config/intercept'
+import utils from './utils/index'
 import 'wepy-async-function'
 
 
@@ -15,7 +16,31 @@ export default class extends wepy.app {
       'pages/signIn',
       'pages/addEqu',
       'pages/index',
+      "pages/my",
+      'pages/userInfo',
+      'pages/explain',
+      'pages/problem',
+      'pages/about'
     ],
+    "tabBar": {
+      "borderStyle": "white",
+      "color": "#99d498",
+      "selectedColor": "#fff",
+      "backgroundColor": "#02ad00",
+      "list": [
+        {
+          "pagePath": "pages/index",
+          "text": "位置",
+          "iconPath": "assets/image/index.png",
+          "selectedIconPath": "assets/image/index-select.png"
+        },{
+          "pagePath": "pages/my",
+          "text": "更多",
+          "iconPath": "assets/image/my.png",
+          "selectedIconPath": "assets/image/my-select.png"
+        }
+      ]
+    },
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
@@ -27,6 +52,8 @@ export default class extends wepy.app {
   userInfo = {}
 
   api = api
+
+  utils=utils
 
   request = intercept
 
@@ -58,6 +85,7 @@ export default class extends wepy.app {
 
 <style lang="scss">
   @import 'assets/scss/index.scss';
+  @import 'assets/font/vant-icon.scss';
   .content {
     width: 100vw;
   }

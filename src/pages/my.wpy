@@ -1,0 +1,120 @@
+
+<template lang="wxml">
+    <view class="content my">
+        <van-cell-group>
+            <van-cell class="tou-cell" link-type="navigateTo" url="./userInfo">
+                <view class="tou" slot="title">
+                    <open-data type="userAvatarUrl"  class="tou-img"></open-data>
+                    <open-data type="userNickName"  class="tou-name"></open-data>
+                    <text class="tou-phone">{{phone}}</text>
+                </view>
+                <van-icon slot="right-icon" name="arrow" custom-class="cell-right-content" class="tou-right"/>
+            </van-cell>
+        </van-cell-group>
+        <van-cell-group custom-class="mt10">
+            <van-cell title="扫一扫" custom-class="cell" link-type="navigateTo" url="./addEqu">
+                <van-icon name="arrow" custom-class="cell-right-content"/>
+            </van-cell>
+        </van-cell-group>
+        <van-cell-group custom-class="mt10">
+            <van-cell title="电子说明书" custom-class="cell" link-type="navigateTo" url="./explain">
+                <van-icon name="arrow" custom-class="cell-right-content"/>
+            </van-cell>
+            <van-cell title="常见问题" custom-class="cell" link-type="navigateTo" url="./problem">
+                <van-icon name="arrow" custom-class="cell-right-content"/>
+            </van-cell>
+        </van-cell-group>
+        <van-cell-group custom-class="mt10">
+            <van-cell title="关于" custom-class="cell" link-type="navigateTo" url="./about">
+                <van-icon name="arrow" custom-class="cell-right-content"/>
+            </van-cell>
+        </van-cell-group>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class my extends wepy.page {
+    config = {
+        "navigationBarTitleText": "更多",
+        "usingComponents": {
+            "van-cell": "../vant/cell/index",
+            "van-cell-group": "../vant/cell-group/index",
+            "van-icon": "../vant/icon/index"
+        }
+    };
+    
+    components = {
+        
+    };
+
+    data = {
+        phone:''
+    };
+
+    methods = {
+        goUserInfo(){
+            console.log('qqq')
+        }
+    };
+    
+    customFunction ={
+        
+    };
+
+    events = {
+        
+    };
+
+    onLoad(){
+        this.phone=this.$parent.userInfo.country
+        this.$apply()
+    }
+}
+</script>
+
+<style lang="scss">
+.my{
+    height: 100vh;
+    background-color: #eee;
+    .cell{
+        line-height:70rpx !important;
+        font-size: 30rpx;
+    }
+    .cell-right-content{
+        font-size: 30rpx;
+        display: block;
+        line-height: 70rpx;
+    }
+    .tou-cell{
+        line-height:150rpx;
+    }
+    .tou{
+        position: relative;
+        .tou-img{
+            width: 150rpx;
+            height: 150rpx;
+            display: block;
+        }
+        .tou-name{
+            position: absolute;
+            left:180rpx;
+            top: 20rpx;
+            font-size: bold;
+            font-size: 40rpx;
+        }
+        .tou-phone{
+            position: absolute;
+            font-size: 30rpx;
+            left:180rpx;
+            top: 80rpx;
+            color:#777;
+        }
+    }
+    .tou-right .cell-right-content{
+        line-height: 150rpx;
+    }
+}
+
+/** less **/
+</style>
